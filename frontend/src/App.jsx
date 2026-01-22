@@ -15,12 +15,16 @@ function App() {
       return;
     }
 
+    const apiUrl = import.meta.env.VITE_PROD === "1"
+    ? "https://react-fastapi-chatbot.onrender.com"
+    : "http://localhost:8000";
+
     setLoading(true);
     setError("");
     setResult("");
 
     try {
-      const response = await fetch("http://localhost:8000/generate", {
+      const response = await fetch(`${apiUrl}/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -60,6 +64,17 @@ function App() {
           </h1>
           <p className="text-slate-600 mt-1">
             AI-powered strategic messaging for Democratic campaigns.
+          </p>
+          <p className="text-sm text-gray-500 mt-1">
+            Made by Ethan Chen {" "}
+            <a
+              href="https://github.com/CaliberSeven/react-fastapi-chatbot"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline font-medium"
+            >
+              (GitHub)
+            </a>
           </p>
         </header>
 
@@ -125,23 +140,40 @@ function App() {
               </div>
 
               <div className="p-8 flex-1">
-                {result ? (
-                  <div className="prose prose-slate max-w-none">
-                    <div className="whitespace-pre-wrap text-slate-700 text-lg leading-relaxed">
-                      {result}
+                  {result ? (
+                    <div className="prose prose-slate max-w-none">
+                      <div className="whitespace-pre-wrap text-slate-700 text-lg leading-relaxed">
+                        {result}
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-4">
-                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center">
-                      ✍️
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-6">
+                      {/* Icon or Spinner Container */}
+                      <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center">
+                        {loading ? (
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        ) : (
+                          <span className="text-2xl">✍️</span>
+                        )}
+                      </div>
+
+                      <div className="text-center">
+                        <p className="italic text-lg">
+                          {loading ? "Strategizing with Gemini..." : "Your drafted content will appear here."}
+                        </p>
+
+                        {loading && (
+                          <div className="mt-8 pt-4 border-t border-slate-100 max-w-xs mx-auto">
+                            <p className="text-sm text-slate-400">
+                              <span className="font-semibold text-slate-500">Note:</span> Since this is a free server,
+                              the first request may take ~30s to wake up.
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <p className="italic">
-                      {loading ? "Strategizing with Gemini..." : "Your drafted content will appear here."}
-                    </p>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
             </div>
           </div>
         </main>
